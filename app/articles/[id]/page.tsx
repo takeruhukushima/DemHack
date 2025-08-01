@@ -6,9 +6,13 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeftIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import ReactMarkdown from "react-markdown"
+import ReactMarkdown, { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import type { Article } from "@/lib/types"
+
+type MarkdownComponents = Components & {
+  code?: React.ComponentType<{node?: any; inline?: boolean; className?: string; children?: React.ReactNode}>;
+}
 
 // 動的ルーティングの設定
 export const dynamic = 'force-dynamic' // 常に動的レンダリングを有効にする
@@ -60,8 +64,48 @@ function ArticleDetailContent({ article }: ArticleDetailContentProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="prose max-w-none dark:prose-invert">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <div className="prose prose-slate max-w-none dark:prose-invert dark:prose-headings:text-white dark:prose-p:text-slate-300 dark:prose-strong:text-white dark:prose-a:text-blue-400">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                h1: ({ node: _, ...props }) => <h1 className="text-3xl font-bold mt-8 mb-4" {...props} />,
+                h2: ({ node: _, ...props }) => <h2 className="text-2xl font-bold mt-6 mb-3" {...props} />,
+                h3: ({ node: _, ...props }) => <h3 className="text-xl font-bold mt-5 mb-2" {...props} />,
+                p: ({ node: _, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
+                a: ({ node: _, ...props }) => <a className="hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                ul: ({ node: _, ...props }) => <ul className="list-disc pl-6 mb-4" {...props} />,
+                ol: ({ node: _, ...props }) => <ol className="list-decimal pl-6 mb-4" {...props} />,
+                li: ({ node: _, ...props }) => <li className="mb-1" {...props} />,
+                blockquote: ({ node: _, ...props }) => <blockquote className="border-l-4 border-slate-200 dark:border-slate-600 pl-4 italic my-4" {...props} />,
+                code: ({ node, className, children, ...props }: { node?: any; className?: string; children?: React.ReactNode }) => {
+                  const match = /language-(\w+)/.exec(className || '');
+                  return !className ? (
+                    <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-sm" {...props}>
+                      {children}
+                    </code>
+                  ) : (
+                    <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-md overflow-x-auto my-4">
+                      <pre className="m-0">
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      </pre>
+                    </div>
+                  );
+                },
+                table: ({ node: _, ...props }) => (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full border-collapse" {...props} />
+                  </div>
+                ),
+                th: ({ node: _, ...props }) => (
+                  <th className="border border-slate-300 dark:border-slate-600 px-4 py-2 text-left bg-slate-100 dark:bg-slate-800" {...props} />
+                ),
+                td: ({ node: _, ...props }) => (
+                  <td className="border border-slate-300 dark:border-slate-600 px-4 py-2" {...props} />
+                ),
+              } as MarkdownComponents}
+            >
               {content}
             </ReactMarkdown>
           </div>

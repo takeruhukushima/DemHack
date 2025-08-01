@@ -13,7 +13,7 @@ const articles: Article[] = [
       "Next.js 13以降のApp Routerにおけるデータフェッチのベストプラクティスについて解説します。サーバーコンポーネントとクライアントコンポーネントでのデータ取得方法、キャッシュ戦略、再検証の仕組みなどを網羅的に説明します。",
     content: `Next.js 13で導入されたApp Routerは、React Server Componentsを基盤としており、データフェッチのパラダイムを大きく変えました。従来のPages Routerでは、getServerSidePropsやgetStaticProps、useEffectフックなどを用いてデータフェッチを行っていましたが、App Routerではサーバーコンポーネントがデフォルトとなり、より柔軟かつ効率的なデータ取得が可能になりました。
 
-### サーバーコンポーネントでのデータフェッチ
+###  サーバーコンポーネントでのデータフェッチ
 サーバーコンポーネントでは、非同期関数としてコンポーネントを定義し、awaitキーワードを使って直接データをフェッチできます。これにより、クライアントサイドでのデータ取得に伴うウォーターフォール問題を回避し、初期ロード時のパフォーマンスを向上させることができます。
 
 \`\`\`tsx
@@ -219,7 +219,8 @@ export function getArticles(): Article[] {
  * @param id 記事のID
  * @returns Article | undefined 記事オブジェクト、または見つからない場合はundefined
  */
-export function getArticleById(id: string): Article | undefined {
+export async function getArticleById(id: string): Promise<Article | undefined> {
+  // 将来的にはここでデータベースから非同期にデータを取得するように変更可能
   return articles.find((article) => article.id === id)
 }
 

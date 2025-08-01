@@ -6,64 +6,98 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeftIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import type { Article } from "@/lib/types"
+
+// 動的ルーティングの設定
+export const dynamic = 'force-dynamic' // 常に動的レンダリングを有効にする
+
+interface ArticleDetailContentProps {
+  article: Article
+}
 
 /**
- * 記事詳細ページコンポーネント
- * 特定のIDの記事の詳細内容を表示します。
+ * 記事詳細ページの表示コンポーネント
  */
-export default function ArticleDetailPage({ params }: { params: { id: string } }) {
-  // URLパラメータから記事IDを取得し、記事データを取得
-  const article = getArticleById(params.id)
+function ArticleDetailContent({ article }: ArticleDetailContentProps) {
+  // ユーザーIDをシミュレート (実際には認証システムから取得)
+  const simulatedUserId = "user-123"
+  
+  // 記事データをデストラクチャリング
+  const { id: articleId, title, content, date, author, tags = [], votes } = article
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="mb-6">
+        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeftIcon className="mr-2 h-4 w-4" />
+          記事一覧に戻る
+        </Link>
+      </div>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <div className="flex flex-col space-y-1.5">
+            <CardTitle className="text-2xl font-bold">{title}</CardTitle>
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <span>投稿日: {new Date(date).toLocaleDateString()}</span>
+              <span>•</span>
+              <span>{author}</span>
+              {tags && tags.length > 0 && (
+                <>
+                  <span>•</span>
+                  <div className="flex flex-wrap gap-1">
+                    {tags.map((tag: string) => (
+                      <Badge key={tag} variant="outline">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="prose max-w-none dark:prose-invert">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {content}
+            </ReactMarkdown>
+          </div>
+          
+          <div className="mt-8 pt-6 border-t">
+            <h3 className="text-lg font-medium mb-4">この記事を評価する</h3>
+            <VoteWidget 
+              articleId={articleId}
+              userId={simulatedUserId}
+              initialVotes={votes}
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+/**
+ * 記事詳細ページ
+ */
+export default async function ArticleDetailPage({
+  params,
+}: {
+  params: { id: string }
+}) {
+  // 動的パラメータを安全に取得するために、paramsを一度変数に代入
+  const { id } = await params;
+  
+  // 記事データを取得
+  const article = await getArticleById(id)
 
   // 記事が見つからない場合は404ページを表示
   if (!article) {
     notFound()
   }
 
-  // ユーザーIDをシミュレート (実際には認証システムから取得)
-  const simulatedUserId = "user-123"
-
-  return (
-    <div className="space-y-8">
-      <Button variant="ghost" asChild className="mb-4">
-        <Link href="/">
-          <ArrowLeftIcon className="mr-2 h-4 w-4" />
-          {"記事一覧へ戻る"}
-        </Link>
-      </Button>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-foreground">{article.title}</CardTitle>
-          <p className="text-muted-foreground text-sm">
-            {"著者: "}
-            {article.author} {" | "} {new Date(article.date).toLocaleDateString()}
-          </p>
-          {/* タグの表示 */}
-          <div className="flex flex-wrap gap-2 mt-2">
-            {article.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-sm">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* 記事の全文を表示 */}
-          <div className="prose dark:prose-invert max-w-none text-foreground">
-            {article.content.split("\n").map((paragraph, index) => (
-              <p key={index} className="mb-4">
-                {paragraph}
-              </p>
-            ))}
-          </div>
-          {/* 投票ウィジェット */}
-          <div className="border-t pt-6 mt-6">
-            <h2 className="text-2xl font-semibold mb-4 text-foreground">記事を評価する</h2>
-            {/* ユーザーIDを渡して1ユーザー1投票をシミュレート */}
-            <VoteWidget articleId={article.id} userId={simulatedUserId} initialVotes={article.votes} />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+  return <ArticleDetailContent article={article} />
 }

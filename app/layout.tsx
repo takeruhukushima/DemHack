@@ -9,9 +9,9 @@ import { Sidebar } from "@/components/layout/sidebar"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "DevAgora",
-  description: "開発者向けの知識共有プラットフォーム",
-    generator: 'v0.dev'
+  title: "DemHack",
+  description: "民主主義プラットフォーム",
+    generator: 'DemHack'
 }
 
 export default function RootLayout({

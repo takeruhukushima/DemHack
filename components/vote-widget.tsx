@@ -114,7 +114,7 @@ export function VoteWidget({ articleId, userId, initialVotes }: VoteWidgetProps)
           <Badge
             className={cn(
               "px-3 py-1 text-sm font-semibold min-w-[30px] justify-center",
-              votes.disapprove > 0 ? "bg-destructive text-destructive-foreground" : "bg-muted text-muted-foreground",
+              votes.disapprove > 0 ? "bg-black text-white" : "bg-muted text-muted-foreground",
             )}
           >
             {votes.disapprove}

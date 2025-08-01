@@ -13,7 +13,7 @@ export function Header() {
         {/* アプリケーションロゴとタイトル */}
         <Link href="/" className="flex items-center gap-2 text-2xl font-bold">
           <MountainIcon className="h-6 w-6" />
-          {"DevAgora"}
+          {"DemHack"}
         </Link>
         {/* ナビゲーションリンクとログインボタン */}
         <nav className="flex items-center gap-4">

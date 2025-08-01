@@ -11,7 +11,7 @@ export function Footer() {
         <p className="text-sm">
           {"© "}
           {new Date().getFullYear()}
-          {" DevAgora. All rights reserved."}
+          {" DemHack. All rights reserved."}
         </p>
         <nav className="flex gap-4 text-sm">
           <Link href="#" className="hover:underline">
